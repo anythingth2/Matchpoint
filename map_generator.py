@@ -6,7 +6,7 @@ from PIL import Image
 
 img_path = 'Map/B.jpg'
 output_path = 'Map/B.txt'
-map_resolution = np.array((8, 8))*4
+map_resolution = np.array((8, 8))
 # %%
 img = cv2.imread(img_path)
 img = cv2.resize(img, tuple(map_resolution),)
@@ -21,3 +21,6 @@ output_lines[-1] = output_lines[-1][:-1]
 # %%
 with open(output_path, 'w', encoding='utf-8') as f:
     f.writelines(output_lines)
+
+
+# %%

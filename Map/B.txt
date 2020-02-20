@@ -1,32 +1,8 @@
-                                
-                                
-                                
-                                
-                                
-        OOOOOOOOOOOOO           
-         OOOOOOOOOOOO           
-          OOOO   OOOOOO         
-          OOO      OOOO         
-          OOO      OOOO         
-          OOO      OOOO         
-          OOO       OOO         
-         OOOO       OOO         
-          OOO      OOOO         
-         OOOOOO    OOO          
-         OOOOOOOOOOOOO          
-         OOOOOOOOOOOOO          
-         OOOOOOOOOOOOO          
-         OOOOO   OOOOOO         
-         OOOOO    OOOOO         
-         OOOO      OOOOO        
-         OOOO      OOOOO        
-         OOOO      OOOOO        
-         OOOO       OOO         
-         OOOO       OOO         
-         OOOO      OOOO         
-        OOOOOO    OOOOO         
-        OOOOOOOOOOOOOOOO        
-       OOOOOOOOOOOOOOOO         
-                                
-                                
-                                
+        
+  OOO   
+  O  O  
+  O  O  
+  OOOO  
+  O  O  
+  O  O  
+        
