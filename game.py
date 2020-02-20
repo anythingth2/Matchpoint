@@ -1,6 +1,6 @@
 # %%
 import numpy as np
-
+import time
 # %%
 BACKGROUND_CHAR = ' '
 FILLED_CHAR = 'O'
@@ -10,23 +10,27 @@ class ConsoleGame:
 
     def __init__(self, map_path):
         self.map_path = map_path
-        self.map = None
-        self.load_map(self.map_path)
+        self.answer_map = self.load_map(self.map_path)
+        self.map = np.full_like(self.answer_map, False)
+        self.row_counts = self.count_neighbours(
+            self.answer_map, count_value=True)
+        self.column_counts = self.count_neighbours(
+            self.answer_map.T, count_value=True)
 
     def load_map(self, map_path):
         with open(map_path, 'r') as f:
             lines = f.read().splitlines()
         map_matrix = np.array([list(line) for line in lines], dtype='object')
         map_matrix = map_matrix == 'O'
-        self.map = map_matrix
+        return map_matrix
 
-    def render(self):
-        _map = np.full_like(self.map, BACKGROUND_CHAR, dtype='object')
-        _map[self.map] = FILLED_CHAR
+    def render_answer(self):
+        _map = np.full_like(self.answer_map, BACKGROUND_CHAR, dtype='object')
+        _map[self.answer_map] = FILLED_CHAR
 
         map_lines = []
         for i, row in enumerate(_map):
-            order = str(i+1).rjust(2, ' ')
+            order = str(i).rjust(2, ' ')
             map_text = ''.join(row)
             row_neighbour_text = ' '.join(
                 self.count_neighbour_vector(row, FILLED_CHAR, is_output_str=True))
@@ -44,7 +48,58 @@ class ConsoleGame:
 
         map_lines += [' '*3 + '-'*_map.shape[1]]
         map_lines += column_lines
-        
+
+        for line in map_lines:
+            print(line)
+
+    def check_rule(self, input_neighbours, label_neighbours):
+        if len(input_neighbours) > len(label_neighbours):
+            return False
+
+        for i in range(len(input_neighbours)):
+            if input_neighbours[i] > label_neighbours[i]:
+                return False
+        return True
+
+    def paint(self, x, y):
+        _map = self.map.copy()
+        _map[y, x] = True
+        input_row_neighbours = self.count_neighbour_vector(
+            _map[y], count_value=True)
+        input_column_neighbours = self.count_neighbour_vector(
+            _map[:, x], count_value=True)
+        if self.check_rule(input_row_neighbours, self.row_counts[y])\
+                and self.check_rule(input_column_neighbours, self.column_counts[x]):
+            self.map[y, x] = True
+            return True
+        else:
+            return False
+
+    def render(self):
+        _map = np.full_like(self.map, BACKGROUND_CHAR, dtype='object')
+        _map[self.map] = FILLED_CHAR
+
+        map_lines = []
+        map_lines += [' '*3 + ''.join([str(i) for i in range(_map.shape[1])])]
+        map_lines += [' '*3 + '_'*_map.shape[1]]
+        for i, row in enumerate(_map):
+            order = str(i).rjust(2, ' ')
+            map_text = ''.join(row)
+            row_neighbour_text = ' '.join(
+                [str(count) for count in self.row_counts[i]])
+            line = f"{order}|{map_text}|{row_neighbour_text}"
+            map_lines.append(line)
+        column_counts = [[str(count) for count in neighbors]
+                         for neighbors in self.column_counts]
+        max_count_length = max([len(neighbour_counts)
+                                for neighbour_counts in column_counts])
+        column_counts = [column + [' '] *
+                         (max_count_length-len(column)) for column in column_counts]
+        column_counts = np.array(column_counts).T
+        column_lines = [' '*3 + ''.join(column) for column in column_counts]
+
+        map_lines += [' '*3 + '-'*_map.shape[1]]
+        map_lines += column_lines
         for line in map_lines:
             print(line)
 
@@ -69,5 +124,27 @@ class ConsoleGame:
         return [self.count_neighbour_vector(vector, **kwargs) for vector in _map]
 
 
+# %%
 game = ConsoleGame('Map/B.txt')
 game.render()
+
+
+# %%
+probs = []
+for i in range(8):
+    for j in range(8):
+        probs.append((i, j))
+np.random.shuffle(probs)
+
+# %%
+probs
+
+# %%
+for action in probs:
+    x, y = action
+    result = game.paint(x, y)
+    print(f'paint at {x},{y}\tresult: {result}')
+    game.render()
+    time.sleep(0.5)
+
+# %%
