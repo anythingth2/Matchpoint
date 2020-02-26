@@ -136,8 +136,6 @@ for i in range(8):
         probs.append((i, j))
 np.random.shuffle(probs)
 
-# %%
-probs
 
 # %%
 for action in probs:
