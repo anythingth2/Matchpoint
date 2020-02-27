@@ -75,6 +75,15 @@ class ConsoleGame:
         else:
             return False
 
+    def erase(self, x, y):
+        self.map[y, x] = False
+
+    def clear(self):
+        self.map = np.full_like(self.answer_map, False)
+
+    def check_result(self):
+        return np.all(self.answer_map == self.map)
+
     def render(self):
         _map = np.full_like(self.map, BACKGROUND_CHAR, dtype='object')
         _map[self.map] = FILLED_CHAR
@@ -126,23 +135,19 @@ class ConsoleGame:
 
 # %%
 game = ConsoleGame('Map/B.txt')
-game.render()
+game.render_answer()
+
+input('render answer map')
+# %%
 
 
 # %%
-probs = []
-for i in range(8):
-    for j in range(8):
-        probs.append((i, j))
-np.random.shuffle(probs)
-
-
-# %%
-for action in probs:
-    x, y = action
+game.clear()
+answer_actions = np.argwhere(game.answer_map, )[:, ::-1]
+for x,y in answer_actions:
     result = game.paint(x, y)
     print(f'paint at {x},{y}\tresult: {result}')
     game.render()
     time.sleep(0.5)
-
+print('game result', game.check_result())
 # %%
