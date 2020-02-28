@@ -8,6 +8,7 @@ FILLED_CHAR = 'O'
 
 class ConsoleGame:
 
+
     def __init__(self, map_path):
         self.map_path = map_path
         self.answer_map = self.load_map(self.map_path)
@@ -30,6 +31,7 @@ class ConsoleGame:
         map_matrix = map_matrix == 'O'
         return map_matrix
 
+    # Print answer map
     def render_answer(self):
         _map = np.full_like(self.answer_map, BACKGROUND_CHAR, dtype='object')
         _map[self.answer_map] = FILLED_CHAR
@@ -67,6 +69,8 @@ class ConsoleGame:
                 return False
         return True
 
+    # Check position (x,y) is paintable
+    # return Boolean
     def is_paintable(self, x, y):
         _map = self.map.copy()
         _map[y, x] = True
@@ -77,6 +81,11 @@ class ConsoleGame:
         return self.check_rule(input_row_neighbours, self.row_counts[y])\
             and self.check_rule(input_column_neighbours, self.column_counts[x])
 
+    # Try to paint at (x,y)
+    # return boolean of result of paint
+    
+    # If inplace=False then will paint on a copy of game object and return it
+    # (Not modify current object)
     def paint(self, x, y, inplace=True):
         if inplace:
             game = self
@@ -93,6 +102,10 @@ class ConsoleGame:
         else:
             return paintable, game
 
+    # Erase painted cell at (x,y)
+    
+    # If inplace=False then will erase on a copy of game object and return it
+    # (Not modify current object)
     def erase(self, x, y, inplace=True):
         if inplace:
             self.map[y, x] = False
@@ -101,12 +114,16 @@ class ConsoleGame:
             game.map[y, x] = False
             return game
 
+    # Clear map
     def clear(self):
         self.map = np.full_like(self.answer_map, False)
 
+    # Check result of game
+    # return boolean of correction
     def check_result(self):
         return np.all(self.answer_map == self.map)
 
+    # Print current map
     def render(self):
         _map = np.full_like(self.map, BACKGROUND_CHAR, dtype='object')
         _map[self.map] = FILLED_CHAR
@@ -155,10 +172,12 @@ class ConsoleGame:
     def count_neighbours(self, _map, **kwargs):
         return [self.count_neighbour_vector(vector, **kwargs) for vector in _map]
 
+    # Count number of painted cell on answer map
     @property
     def count_answer_cell(self):
         return np.sum(self.answer_map)
 
+    # Return List of answer cell of this problem
     @property
     def answer_path(self):
         return np.argwhere(self.answer_map)[:, ::-1]
