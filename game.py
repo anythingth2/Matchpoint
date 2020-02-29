@@ -26,7 +26,8 @@ class ConsoleGame:
     def load_map(self, map_path):
         with open(map_path, 'r') as f:
             lines = f.read().splitlines()
-        map_matrix = np.array([list(line) for line in lines], dtype='object')
+        map_matrix = np.array([np.array(list(line), dtype='object')
+                               for line in lines], dtype='object')
         map_matrix = map_matrix == 'O'
         return map_matrix
 
@@ -201,14 +202,6 @@ class ConsoleGame:
     @property
     def shape(self):
         return self.answer_map.shape
-
-
-# %%
-game = ConsoleGame('Map/B.txt')
-
-
-
-# %%
 
 
 # %%

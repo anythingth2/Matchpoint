@@ -218,9 +218,13 @@ class DLS:
 # %%
 
 
-game = ConsoleGame('Map/b.txt')
+game = ConsoleGame('Map/Q.txt')
 # init_x, init_y = -1, 0
 init_x, init_y = game.answer_path[0]
 
+root = Node(init_x, init_y)
+# %%
+search = DLS(game, root=root)
+search.isearch(game.count_answer_cell)
 
 # %%
