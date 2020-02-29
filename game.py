@@ -8,7 +8,6 @@ FILLED_CHAR = 'O'
 
 class ConsoleGame:
 
-
     def __init__(self, map_path):
         self.map_path = map_path
         self.answer_map = self.load_map(self.map_path)
@@ -83,7 +82,7 @@ class ConsoleGame:
 
     # Try to paint at (x,y)
     # return boolean of result of paint
-    
+
     # If inplace=False then will paint on a copy of game object and return it
     # (Not modify current object)
     def paint(self, x, y, inplace=True):
@@ -103,7 +102,7 @@ class ConsoleGame:
             return paintable, game
 
     # Erase painted cell at (x,y)
-    
+
     # If inplace=False then will erase on a copy of game object and return it
     # (Not modify current object)
     def erase(self, x, y, inplace=True):
@@ -121,9 +120,21 @@ class ConsoleGame:
     # Check result of game
     # return boolean of correction
     def check_result(self):
-        return np.all(self.answer_map == self.map)
+        # return np.all(self.answer_map == self.map)
+        painted_row_counts = self.count_neighbours(
+            self.map, count_value=True)
+        # row_result = all([self.check_rule(painted_row_counts[i], self.row_counts[i])
+        #                   for i in range(len(painted_row_counts))])
+        row_result = painted_row_counts == self.row_counts
+        painted_column_counts = self.count_neighbours(
+            self.map.T, count_value=True)
+        # column_result = all([self.check_rule(painted_column_counts[i], self.column_counts[i])
+        #                      for i in range(len(painted_column_counts))])
+        column_result = painted_column_counts == self.column_counts
+        return row_result and column_result
 
     # Print current map
+
     def render(self):
         _map = np.full_like(self.map, BACKGROUND_CHAR, dtype='object')
         _map[self.map] = FILLED_CHAR
@@ -189,6 +200,11 @@ class ConsoleGame:
 
 
 # %%
-# game = ConsoleGame('Map/B.txt')
+game = ConsoleGame('Map/B.txt')
 
 
+
+# %%
+
+
+# %%
