@@ -1,4 +1,4 @@
-#%%
+# %%
 from typing import List
 from game import ConsoleGame
 import time
@@ -75,14 +75,83 @@ class DFS:
             if search_result is not None:
                 return search_result
         return None
+
 # %%
 
 
-game = ConsoleGame('Map/emoji.txt')
+class BFS:
+    def __init__(self, game: ConsoleGame,
+                 node: Node = None,
+                 descendants: List['BFS'] = None,
+                 paths: List[Node] = None,
+
+                 ):
+        self.game = game
+        self.node = node
+        self.level = 0
+
+        if paths:
+            self.paths = paths.copy()
+        else:
+            self.paths = [self.node]
+        if descendants:
+            self.descendants = descendants
+        else:
+            self.descendants = [self]
+
+    def calculate_cell_idx(self, x, y):
+        height, width = self.game.shape
+        return y*height + x
+
+    def calculate_cell_position(self, idx):
+        height, width = self.game.shape
+        return idx % height, idx // height
+
+    def find_paintable_nodes(self, game, x, y) -> List[Node]:
+        height, width = game.shape
+        nodes = []
+        for idx in range(self.calculate_cell_idx(x, y) + 1, self.calculate_cell_idx(width-1, height-1) + 1):
+            x, y = self.calculate_cell_position(idx)
+            if game.is_paintable(x, y):
+                nodes.append(Node(x, y))
+        return nodes
+
+    def search(self):
+        winners = []
+        new_descendants = []
+        for descendant in self.descendants:
+            _, painted_game = descendant.game.paint(
+                descendant.node.x, descendant.node.y, inplace=False)
+            # print(f'lv.{painted_game.count_painted_cell}'.center(16, '-'))
+            # painted_game.render()
+            # print('-'*16)
+            if painted_game.check_result():
+                winners.append(descendant)
+            for node in self.find_paintable_nodes(
+                    painted_game, descendant.node.x, descendant.node.y):
+                new_descendants.append(
+                    BFS(painted_game, node, paths=descendant.paths+[node]))
+        self.descendants = new_descendants
+        self.level += 1
+        return winners
+# %%
+
+
+game = ConsoleGame('Map/b.txt')
 # init_x, init_y = -1, 0
-init_x, init_y =  game.answer_path[0]
+init_x, init_y = game.answer_path[0]
 # %%
 node = root = Node(init_x, init_y)
-bfs = DFS(game, root,)
+bfs = BFS(game, root,)
 # %%
-leaf = bfs.search()
+
+for i in range(game.count_answer_cell):
+    winners = bfs.search()
+
+
+# %%
+for node in winners[0].paths:
+    print(node)
+
+
+# %%
