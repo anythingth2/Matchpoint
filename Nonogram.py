@@ -4,7 +4,8 @@ import sys
 import Consistant
 import numpy as np
 import time
-
+from game import ConsoleGame
+from search import DFS, DLS, Node
 
 class Game:
 
@@ -66,7 +67,8 @@ class Game:
             tile_color = Consistant.BLUE
         return tile_color
 
-    def draw_map(self, screen, _map=None):
+    def draw_map(self,  _map=None):
+        screen = self.screen
         if _map is None:
             _map = self.map
         for j, tile in enumerate(_map):
@@ -86,8 +88,8 @@ class Game:
                              (new_width, Consistant.SCREEN_HEIGHT), 2)
 
     # Loop หลักของเกมอยู่ในนี้
-    def game_loop(self, screen):
-
+    def game_loop(self, ):
+        screen = self.screen
         while True:
             # กดปุ่ม X เพื่อออกจากโปรแกรม
             print('running')
@@ -100,17 +102,27 @@ class Game:
                     mouse = pygame.mouse.get_pos()
                     # คลิ๊กปุ่มทางขวา(สีเขียว)
                     if(550 > mouse[0] > 450 and 500 > mouse[1] > 450):
-                        answer_actions = np.argwhere(
-                            self.answer_map, )[:, ::-1]
-
-                        for x, y in answer_actions:
-                            result = self.paint(x, y)
-                            self.draw_map(screen)
+                        def render_func(_map):
+                            self.draw_map( _map)
                             self.draw_grid(screen)
                             pygame.display.update()
-                            time.sleep(0.5)
+                        self.green_search_algorithm.render_func = render_func
+                        self.green_search_algorithm.search()
+                        # answer_actions = np.argwhere(
+                        #     self.answer_map, )[:, ::-1]
+
+                        # for x, y in answer_actions:
+                        #     result = self.paint(x, y)
+                            
+                            # time.sleep(0.5)
                     # คลิ๊กปุ่มซ้าย(สีแดง)
                     elif(750 > mouse[0] > 650 and 500 > mouse[1] > 450):
+                        def render_func(_map):
+                            self.draw_map( _map)
+                            self.draw_grid(screen)
+                            pygame.display.update()
+                        self.red_search_algorithm.render_func = render_func
+                        self.red_search_algorithm.search()
                         # answer_actions = np.argwhere(
                         #     self.answer_map, )[:, ::-1]
 
@@ -125,7 +137,7 @@ class Game:
                     elif(650 > mouse[0] > 550 and 575 > mouse[1] > 525):
                         self.clear()
 
-            self.draw_map(screen)
+            #self.draw_map()
             self.draw_grid(screen)
             self.draw_textRow(screen)
             self.draw_textColumn(screen)
@@ -142,7 +154,7 @@ class Game:
         return screen
 
     # เมื่อเรียกใช้ Class Game
-    def __init__(self, map_path):
+    def __init__(self, map_path, green_search_algorithm=None, red_search_algorithm=None):
 
         self.map_path = map_path
         self.answer_map = self.read_map(self.map_path)
@@ -152,10 +164,12 @@ class Game:
         self.column_counts = self.count_neighbours(
             self.answer_map.T, count_value=True)
 
-        screen = self.initialize_game()
-
+        self.screen = self.initialize_game()
+        
+        self.green_search_algorithm = green_search_algorithm
+        self.red_search_algorithm = red_search_algorithm
         # เรียกใช้ Game Loop
-        self.game_loop(screen)
+        # self.game_loop(screen)
 
     # อ่าน MAP
     def read_map(self, map_path):
@@ -221,8 +235,18 @@ class Game:
 
 
 # %%
-game = Game('Map/B.txt')
 
+#%%
+map_path = 'Map/B.txt'
+console_game = ConsoleGame(map_path)
+init_x, init_y = console_game.answer_path[0]
+root = Node(init_x, init_y)
+dfs = DFS(console_game, root=root, )
+dls = DLS(console_game, max_depth=console_game.count_answer_cell, root=root,)
+#%%
 
-
+game = Game(map_path, green_search_algorithm=dfs, red_search_algorithm=dls)
 # %%
+game.initialize_game()
+game.game_loop()
+print('HI')
