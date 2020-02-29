@@ -183,6 +183,10 @@ class ConsoleGame:
     def count_neighbours(self, _map, **kwargs):
         return [self.count_neighbour_vector(vector, **kwargs) for vector in _map]
 
+    @property
+    def count_painted_cell(self):
+        return np.sum(self.map)
+
     # Count number of painted cell on answer map
     @property
     def count_answer_cell(self):
