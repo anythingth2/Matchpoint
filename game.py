@@ -8,8 +8,7 @@ FILLED_CHAR = 'O'
 
 class ConsoleGame:
 
-
-    def __init__(self, map_path):
+    def __init__(self, map_path, ):
         self.map_path = map_path
         self.answer_map = self.load_map(self.map_path)
         self.map = np.full_like(self.answer_map, False)
@@ -83,7 +82,7 @@ class ConsoleGame:
 
     # Try to paint at (x,y)
     # return boolean of result of paint
-    
+
     # If inplace=False then will paint on a copy of game object and return it
     # (Not modify current object)
     def paint(self, x, y, inplace=True):
@@ -103,7 +102,7 @@ class ConsoleGame:
             return paintable, game
 
     # Erase painted cell at (x,y)
-    
+
     # If inplace=False then will erase on a copy of game object and return it
     # (Not modify current object)
     def erase(self, x, y, inplace=True):
@@ -172,6 +171,10 @@ class ConsoleGame:
     def count_neighbours(self, _map, **kwargs):
         return [self.count_neighbour_vector(vector, **kwargs) for vector in _map]
 
+    @property
+    def count_painted_cell(self):
+        return np.sum(self.map)
+
     # Count number of painted cell on answer map
     @property
     def count_answer_cell(self):
@@ -190,5 +193,3 @@ class ConsoleGame:
 
 # %%
 # game = ConsoleGame('Map/B.txt')
-
-
