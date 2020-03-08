@@ -90,9 +90,9 @@ class Game:
     # Loop หลักของเกมอยู่ในนี้
     def game_loop(self, ):
         screen = self.screen
+        self.draw_map()
         while True:
             # กดปุ่ม X เพื่อออกจากโปรแกรม
-            print('running')
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -135,7 +135,7 @@ class Game:
                         pass
 
                     elif(650 > mouse[0] > 550 and 575 > mouse[1] > 525):
-                        self.clear()
+                        self.draw_map()
 
             #self.draw_map()
             self.draw_grid(screen)
