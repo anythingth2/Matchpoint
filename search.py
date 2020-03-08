@@ -4,7 +4,7 @@ from game import ConsoleGame
 import time
 import numpy as np
 # %%
-
+DELAY = 0.1
 
 class Node:
     def __init__(self, x, y, ):
@@ -67,8 +67,9 @@ class DFS:
             print("WIN"*10)
             return self
         else:
-            print('not match', np.argwhere(
-                painted_game.answer_map != painted_game.map))
+            painted_game.render()
+            # print('not match', np.argwhere(
+            #     painted_game.answer_map != painted_game.map))
 
         paintable_nodes = self.find_paintable_nodes(
             painted_game, self.root.x, self.root.y)
@@ -77,7 +78,7 @@ class DFS:
             self.childs.append(DFS(painted_game, root=node, paths=self.paths, render_func=self.render_func, count_node=self.count_node))
 
         for child in self.childs:
-            time.sleep(0.25)
+            time.sleep(DELAY)
             search_result = child.search()
             if search_result is not None:
                 return search_result
@@ -169,6 +170,8 @@ class DLS:
             self.paths = []
         
         self.render_func = render_func
+        
+        self.start_time = time.time()
     def calculate_cell_idx(self, x, y):
         height, width = self.game.shape
         return y*height + x
@@ -204,8 +207,10 @@ class DLS:
             self.win = True
             return self
         else:
+            painted_game.render()
             # print('not match', np.argwhere(
             #    painted_game.answer_map != painted_game.map))
+          
             pass
 
         if maxDept <= 0:
@@ -219,7 +224,7 @@ class DLS:
             self.childs.append(DLS(painted_game, max_depth=self.max_depth, root=node, paths=self.paths, render_func=self.render_func, ))
 
         for child in self.childs:
-            time.sleep(0.25)
+            time.sleep(DELAY)
             search_result = child._search(maxDept-1)
             if search_result is not None:
                 return search_result
@@ -231,7 +236,8 @@ class DLS:
             winner = self._search(i)
             if self.win:
                 return winner
-
+    def count_node(self, ):
+        return sum([child.count_node() for child in self.childs]) + 1
 # %%
 
 

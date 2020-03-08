@@ -125,6 +125,8 @@ class Game:
                             pygame.display.update()
                         self.red_search_algorithm.render_func = render_func
                         self.red_search_algorithm.search()
+                        print('Number of node:',self.red_search_algorithm.count_node())
+                        print(f'Time elapsed: {time.time() -self.red_search_algorithm.start_time} s')
                         # answer_actions = np.argwhere(
                         #     self.answer_map, )[:, ::-1]
 
@@ -239,7 +241,7 @@ class Game:
 # %%
 
 #%%
-map_path = 'Map/B.txt'
+map_path = 'Map/R.txt'
 console_game = ConsoleGame(map_path)
 init_x, init_y = console_game.answer_path[0]
 root = Node(init_x, init_y)
