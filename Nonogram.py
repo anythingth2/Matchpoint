@@ -108,6 +108,8 @@ class Game:
                             pygame.display.update()
                         self.green_search_algorithm.render_func = render_func
                         self.green_search_algorithm.search()
+                        print('Number of node:',self.green_search_algorithm.count_node())
+                        print(f'Time elapsed: {time.time() -self.green_search_algorithm.start_time} s')
                         # answer_actions = np.argwhere(
                         #     self.answer_map, )[:, ::-1]
 

@@ -19,7 +19,8 @@ class DFS:
     def __init__(self, game: ConsoleGame,
                  root: Node = None,
                  childs: List['DFS'] = None,
-                 paths: List[Node] = None, 
+                 paths: List[Node] = None,
+                 count_node= 0,
                  render_func=None):
         self.game = game
         self.root = root
@@ -32,6 +33,8 @@ class DFS:
         else:
             self.paths = []
         self.render_func = render_func
+        self.start_time = time.time()
+        
 
     def calculate_cell_idx(self, x, y):
         height, width = self.game.shape
@@ -66,13 +69,12 @@ class DFS:
         else:
             print('not match', np.argwhere(
                 painted_game.answer_map != painted_game.map))
-            pass
 
         paintable_nodes = self.find_paintable_nodes(
             painted_game, self.root.x, self.root.y)
         self.childs = []
         for node in paintable_nodes:
-            self.childs.append(DFS(painted_game, root=node, paths=self.paths, render_func=self.render_func))
+            self.childs.append(DFS(painted_game, root=node, paths=self.paths, render_func=self.render_func, count_node=self.count_node))
 
         for child in self.childs:
             time.sleep(0.25)
@@ -80,6 +82,8 @@ class DFS:
             if search_result is not None:
                 return search_result
         return None
+    def count_node(self, ):
+        return sum([child.count_node() for child in self.childs]) + 1
 
 # %%
 
