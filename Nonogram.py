@@ -125,63 +125,7 @@ class Game:
         self.bg = pygame.image.load("Nonogram.png")
 
         while True:
-<<<<<<< Updated upstream
-            # กดปุ่ม X เพื่อออกจากโปรแกรม
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                # Event เมื่อคลิ๊กเมาส์
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    mouse = pygame.mouse.get_pos()
-                    # คลิ๊กปุ่มทางขวา(สีเขียว)
-                    if(550 > mouse[0] > 450 and 500 > mouse[1] > 450):
-                        def render_func(_map):
-                            self.draw_map( _map)
-                            self.draw_grid(screen)
-                            pygame.display.update()
-                        self.green_search_algorithm.render_func = render_func
-                        self.green_search_algorithm.search()
-                        print('Number of node:',self.green_search_algorithm.count_node())
-                        print(f'Time elapsed: {time.time() -self.green_search_algorithm.start_time} s')
-                        # answer_actions = np.argwhere(
-                        #     self.answer_map, )[:, ::-1]
 
-                        # for x, y in answer_actions:
-                        #     result = self.paint(x, y)
-                            
-                            # time.sleep(0.5)
-                    # คลิ๊กปุ่มซ้าย(สีแดง)
-                    elif(750 > mouse[0] > 650 and 500 > mouse[1] > 450):
-                        def render_func(_map):
-                            self.draw_map( _map)
-                            self.draw_grid(screen)
-                            pygame.display.update()
-                        self.red_search_algorithm.render_func = render_func
-                        self.red_search_algorithm.search()
-                        print('Number of node:',self.red_search_algorithm.count_node())
-                        print(f'Time elapsed: {time.time() -self.red_search_algorithm.start_time} s')
-                        # answer_actions = np.argwhere(
-                        #     self.answer_map, )[:, ::-1]
-
-                        # for x, y in answer_actions:
-                        #     result = self.paint(x, y)
-                        #     self.draw_map(screen)
-                        #     self.draw_grid(screen)
-                        #     pygame.display.update()
-                        #     time.sleep(0.5)
-                        pass
-
-                    elif(650 > mouse[0] > 550 and 575 > mouse[1] > 525):
-                        self.draw_map()
-
-            #self.draw_map()
-            self.draw_grid(screen)
-            self.draw_textRow(screen)
-            self.draw_textColumn(screen)
-            self.drawButton(screen)
-            pygame.display.update()
-=======
             # คลิ๊กปุ่ม X เพื่อออกจากโปรแกรม
             if self.stage == 0:
                 screen.blit(self.bg,[0,0])
@@ -383,7 +327,7 @@ class Game:
                 self.draw_textColumn(screen)
                 self.drawButton(screen)
                 pygame.display.update()
->>>>>>> Stashed changes
+
 
     # Set Up ฉากหลังของ GAME
     def initialize_game(self):
@@ -477,21 +421,12 @@ class Game:
 # %%
 
 #%%
-<<<<<<< Updated upstream
-map_path = 'Map/R.txt'
-console_game = ConsoleGame(map_path)
-init_x, init_y = console_game.answer_path[0]
-root = Node(init_x, init_y)
-dfs = DFS(console_game, root=root, )
-dls = DLS(console_game, max_depth=console_game.count_answer_cell, root=root,)
-=======
-#map_path = 'Map/B.txt'
+#map_path = 'Map/R.txt'
 #console_game = ConsoleGame(map_path)
 #init_x, init_y = console_game.answer_path[0]
 #root = Node(init_x, init_y)
 #dfs = DFS(console_game, root=root, )
 #dls = DLS(console_game, max_depth=console_game.count_answer_cell, root=root,)
->>>>>>> Stashed changes
 #%%
 
 #game = Game(map_path, green_search_algorithm=dfs, red_search_algorithm=dls)
