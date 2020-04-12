@@ -65,6 +65,25 @@ class Game:
         textrect3.centery = 550
         screen.blit(text3, textrect3)
 
+    def draw_prob(self,_map=None):
+
+        font = pygame.font.Font('arial.ttf', 20)
+        text = font.render(' ', True, (0, 0, 0))
+        textrect = text.get_rect()
+        textrect.centery = Consistant.BLOCK_HEIGHT/2
+
+        screen = self.screen
+        if _map is None:
+            _map = self.map
+        for j, tile in enumerate(_map):
+            textrect.centerx = Consistant.BLOCK_WIDTH/4
+            for i, tile_contents in enumerate(tile):
+                if tile_contents == False:
+                    text = font.render('0.75', True, (0, 0, 0))
+                    screen.blit(text, textrect)
+                    textrect.centerx = textrect.centerx+Consistant.BLOCK_WIDTH
+            textrect.centery = textrect.centery+Consistant.BLOCK_HEIGHT
+
     def draw_textRow(self, screen):
         font = pygame.font.Font('arial.ttf', 20)
         text = font.render(' ', True, (0, 0, 0))
@@ -136,7 +155,8 @@ class Game:
                         sys.exit()
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         self.stage = 1
-            
+                        screen.fill(Consistant.WHITE)
+                        pygame.display.update()
             elif self.stage == 1 :
                 screen.fill(Consistant.WHITE)
                 self.drawScreen(screen)
@@ -304,6 +324,7 @@ class Game:
                             def render_func(_map):
                                 self.draw_map( _map)
                                 self.draw_grid(screen)
+                                self.draw_prob()
                                 pygame.display.update()
                             self.green_search_algorithm.render_func = render_func
                             self.green_search_algorithm.search()
@@ -312,6 +333,7 @@ class Game:
                             def render_func(_map):
                                 self.draw_map( _map)
                                 self.draw_grid(screen)
+                                self.draw_prob()
                                 pygame.display.update()
                             self.red_search_algorithm.render_func = render_func
                             self.red_search_algorithm.search()
@@ -326,8 +348,8 @@ class Game:
                 self.draw_textRow(screen)
                 self.draw_textColumn(screen)
                 self.drawButton(screen)
+                self.draw_prob()
                 pygame.display.update()
-
 
     # Set Up ฉากหลังของ GAME
     def initialize_game(self):
