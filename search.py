@@ -5,7 +5,7 @@ from game import ConsoleGame
 import time
 import numpy as np
 # %%
-
+DELAY = 0.1
 
 class Node:
     def __init__(self, x, y, ):
@@ -20,7 +20,9 @@ class DFS:
     def __init__(self, game: ConsoleGame,
                  root: Node = None,
                  childs: List['DFS'] = None,
-                 paths: List[Node] = None):
+                 paths: List[Node] = None,
+                 count_node= 0,
+                 render_func=None):
         self.game = game
         self.root = root
         if childs:
@@ -31,6 +33,9 @@ class DFS:
             self.paths = paths.copy()
         else:
             self.paths = []
+        self.render_func = render_func
+        self.start_time = time.time()
+        
 
     def calculate_cell_idx(self, x, y):
         height, width = self.game.shape
@@ -54,28 +59,33 @@ class DFS:
             self.root.x, self.root.y, inplace=False)
         self.paths.append(self.root)
         print(f'lv.{painted_game.count_painted_cell}'.center(16, '-'))
-        painted_game.render()
+        if self.render_func is None:
+            painted_game.render()
+        else:
+            self.render_func(painted_game.map.copy())
         print('-'*16)
         if painted_game.check_result():
             print("WIN"*10)
             return self
         else:
-            print('not match', np.argwhere(
-                painted_game.answer_map != painted_game.map))
-            pass
+            painted_game.render()
+            # print('not match', np.argwhere(
+            #     painted_game.answer_map != painted_game.map))
 
         paintable_nodes = self.find_paintable_nodes(
             painted_game, self.root.x, self.root.y)
         self.childs = []
         for node in paintable_nodes:
-            self.childs.append(DFS(painted_game, root=node, paths=self.paths))
+            self.childs.append(DFS(painted_game, root=node, paths=self.paths, render_func=self.render_func, count_node=self.count_node))
 
         for child in self.childs:
-            # time.sleep(0.25)
+            time.sleep(DELAY)
             search_result = child.search()
             if search_result is not None:
                 return search_result
         return None
+    def count_node(self, ):
+        return sum([child.count_node() for child in self.childs]) + 1
 
 # %%
 
@@ -140,11 +150,15 @@ class BFS:
 
 class DLS:
     def __init__(self, game: ConsoleGame,
+                max_depth,
                  win: bool = False,
                  root: Node = None,
                  childs: List['DLS'] = None,
-                 paths: List[Node] = None):
+                 paths: List[Node] = None,
+                 
+                 render_func=None):
         self.game = game
+        self.max_depth = max_depth
         self.win = win
         self.root = root
         if childs:
@@ -155,7 +169,10 @@ class DLS:
             self.paths = paths.copy()
         else:
             self.paths = []
-
+        
+        self.render_func = render_func
+        
+        self.start_time = time.time()
     def calculate_cell_idx(self, x, y):
         height, width = self.game.shape
         return y*height + x
@@ -173,14 +190,17 @@ class DLS:
                 nodes.append(Node(x, y))
         return nodes
 
-    def search(self, maxDept):
+    def _search(self, maxDept):
         _, painted_game = self.game.paint(
             self.root.x, self.root.y, inplace=False)
 
         self.paths.append(self.root)
 
         print(f'lv.{painted_game.count_painted_cell}'.center(16, '-'))
-        painted_game.render()
+        if self.render_func is None:
+            painted_game.render()
+        else:
+            self.render_func(painted_game.map.copy())
         print('-'*16)
 
         if painted_game.check_result():
@@ -188,8 +208,10 @@ class DLS:
             self.win = True
             return self
         else:
+            painted_game.render()
             # print('not match', np.argwhere(
             #    painted_game.answer_map != painted_game.map))
+          
             pass
 
         if maxDept <= 0:
@@ -200,21 +222,23 @@ class DLS:
         self.childs = []
 
         for node in paintable_nodes:
-            self.childs.append(DLS(painted_game, root=node, paths=self.paths))
+            self.childs.append(DLS(painted_game, max_depth=self.max_depth, root=node, paths=self.paths, render_func=self.render_func, ))
 
         for child in self.childs:
-            # time.sleep(1)
-            search_result = child.search(maxDept-1)
+            time.sleep(DELAY)
+            search_result = child._search(maxDept-1)
             if search_result is not None:
                 return search_result
         return None
 
-    def isearch(self, maxDept):
-        for i in range(maxDept):
+    def search(self, ):
+        for i in range(self.max_depth):
             print("max ", i)
-            winner = self.search(i)
+            winner = self._search(i)
             if self.win:
                 return winner
+    def count_node(self, ):
+        return sum([child.count_node() for child in self.childs]) + 1
 
 
 class GBFS:
@@ -300,9 +324,9 @@ class GBFS:
 # %%
 
 
-game = ConsoleGame('Map/Q.txt')
-# init_x, init_y = -1, 0
-init_x, init_y = game.answer_path[0]
+# game = ConsoleGame('Map/Q.txt')
+# # init_x, init_y = -1, 0
+# init_x, init_y = game.answer_path[0]
 
 root = Node(init_x, init_y)
 # %%
