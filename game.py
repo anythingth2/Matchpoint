@@ -1,6 +1,9 @@
 # %%
+import seaborn as sns
+from tqdm import tqdm, trange
 import numpy as np
 import time
+from fractions import Fraction
 # %%
 BACKGROUND_CHAR = ' '
 FILLED_CHAR = 'O'
@@ -204,4 +207,98 @@ class ConsoleGame:
         return self.answer_map.shape
 
 
+# %%
+# %%
+game: ConsoleGame = ConsoleGame('map/test.txt')
+# game: ConsoleGame = ConsoleGame('map/B.txt')
+
+# %%
+
+
+def search_pattern(vector, counts):
+    def criteria(_vector):
+        return game.count_neighbour_vector(_vector, True) == counts
+    blank_idxes = np.argwhere(~vector).squeeze(axis=1)
+
+    patterns = []
+    for idx in blank_idxes:
+        painted_vector = vector.copy()
+        painted_vector[idx] = True
+        founded_patterns = search_pattern(painted_vector, counts)
+
+        if founded_patterns is not None:
+
+            patterns.extend(founded_patterns)
+
+    if len(patterns) == 0 and criteria(vector):
+        patterns.append(vector)
+    return patterns
+
+
+def find_patterns(vector, counts):
+    patterns = search_pattern(
+        vector, counts=counts)
+    patterns = np.unique(patterns, axis=0)
+    probs = patterns.sum(
+        axis=0) / len(patterns)
+    return patterns, probs
+
+
+prob_table = np.zeros(game.shape, dtype=np.float)
+
+
+horizontal_pattern_table = []
+horizontal_prob_table = []
+for vector, counts in tqdm(zip(game.map, game.row_counts)):
+    patterns, probs = find_patterns(vector, counts)
+    horizontal_pattern_table.append(patterns)
+    horizontal_prob_table.append(probs)
+horizontal_prob_table = np.array(horizontal_prob_table)
+
+vertical_pattern_table = []
+vertical_prob_table = []
+for vector, counts in tqdm(zip(game.map.T, game.column_counts)):
+    patterns, probs = find_patterns(vector, counts)
+    vertical_pattern_table.append(patterns)
+    vertical_prob_table.append(probs)
+vertical_prob_table = np.array(vertical_prob_table)
+# %%
+for y in range(game.map.shape[0]):
+    for x in range(game.map.shape[1]):
+        # vector = game.map[y].copy()
+        # counts = game.row_counts[y]
+        # horizontal_patterns = search_pattern(
+        #     vector, counts=counts)
+        # horizontal_patterns = np.unique(horizontal_patterns, axis=0)
+        # horizontal_probs = horizontal_patterns.sum(
+        #     axis=0) / len(horizontal_patterns)
+
+        # vertial_vector = game.map[:, x].copy()
+        # vertical_counts = game.column_counts[x]
+        # vertical_patterns = search_pattern(
+        #     vertial_vector, counts=vertical_counts)
+        # vertical_patterns = np.unique(vertical_patterns, axis=0)
+        # vertical_probs = vertical_patterns.sum(axis=0) / len(vertical_patterns)
+
+        # prob_table[y, x] = (vertical_probs[y] * horizontal_probs[x])
+        prob_table[y, x] = (vertical_prob_table[x, y] *
+                            horizontal_prob_table[y, x])
+# print(patterns)
+# %%
+print()
+game.render_answer()
+
+# %%
+
+
+# %%
+def float2fraction(v):
+    fraction = Fraction(v).limit_denominator()
+    return f'{fraction.numerator}/{fraction.denominator}'
+
+# %%
+
+# %%
+
+sns.heatmap(prob_table, annot=np.vectorize(float2fraction)( prob_table), fmt='')
 # %%

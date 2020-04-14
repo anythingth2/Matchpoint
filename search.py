@@ -324,26 +324,13 @@ class GBFS:
 # %%
 
 
-# game = ConsoleGame('Map/Q.txt')
-# # init_x, init_y = -1, 0
-# init_x, init_y = game.answer_path[0]
+game = ConsoleGame('Map/Q.txt')
+# init_x, init_y = -1, 0
+init_x, init_y = game.answer_path[0]
 
 root = Node(init_x, init_y)
 # %%
 search = DLS(game, root=root)
 search.isearch(game.count_answer_cell)
 # %%
-# %%
-prob_table = np.random.randint(0, 10, size=(8, 8)) / 10
-nodes = [Node(np.random.randint(0, 8), np.random.randint(0, 8))
-         for _ in range(20)]
-
-sns.heatmap(prob_table, annot=True)
-
-# %%
-
-
-print('\n'.join([str(node) + ' ' + str(prob)
-                 for node, prob in zip(sorted_nodes, sorted_probs)]))
-
 # %%
