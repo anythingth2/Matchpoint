@@ -40,6 +40,10 @@ class DFS:
             self.paths = []
         self.render_func = render_func
         self.start_time = time.time()
+    
+    @property
+    def name(self):
+        return 'DFS'
 
     def calculate_cell_idx(self, x, y):
         height, width = self.game.shape
@@ -114,6 +118,10 @@ class BFS:
         else:
             self.descendants = [self]
 
+    @property
+    def name(self):
+        return 'BFS'
+
     def calculate_cell_idx(self, x, y):
         height, width = self.game.shape
         return y*height + x
@@ -179,6 +187,10 @@ class DLS:
         self.render_func = render_func
 
         self.start_time = time.time()
+
+    @property
+    def name(self):
+        return 'DLS'
 
     def calculate_cell_idx(self, x, y):
         height, width = self.game.shape
@@ -336,6 +348,10 @@ class GBFS:
             self.paths = []
         # self.prob = self.calculate_probability(self.game)
 
+    @property
+    def name(self):
+        return 'GBFS'
+
     def calculate_cell_idx(self, x, y):
         height, width = self.game.shape
         return y*height + x
@@ -356,7 +372,7 @@ class GBFS:
 
     def calculate_probability(self, game: ConsoleGame):
         prob_table = calculate_probability_table(game)
-        plot_prob_table(prob_table)
+        # plot_prob_table(prob_table)
         return prob_table
 
     def sort_by_prob(self, game: ConsoleGame, nodes: List['Node']):
@@ -413,17 +429,11 @@ class GBFS:
 # %%
 
 
-game = ConsoleGame('Map/B6.txt')
+# game = ConsoleGame('Map/B6.txt')
 
-# %%
-
-# prob_table = calculate_probability_table(game)
 
 # # %%
-# plot_prob_table(prob_table)
-
-# %%
-init_x, init_y = game.answer_path[0]
-root = Node(init_x, init_y)
-gbfs = GBFS(game, root=root)
-gbfs.search()
+# init_x, init_y = game.answer_path[0]
+# root = Node(init_x, init_y)
+# gbfs = GBFS(game, root=root)
+# gbfs.search()

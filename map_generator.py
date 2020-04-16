@@ -3,9 +3,9 @@ import cv2
 import numpy as np
 # %%
 
-img_path = 'Map/g.png'
-output_path = 'Map/g.txt'
-map_resolution = np.array((8, 8)) 
+img_path = 'Map/w.png'
+output_path = 'Map/w6.txt'
+map_resolution = np.array((6, 6)) 
 
 img = cv2.imread(img_path)
 img = cv2.resize(img, tuple(map_resolution),)
