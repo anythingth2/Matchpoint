@@ -8,6 +8,7 @@ from game import ConsoleGame
 from search import DFS, DLS, Node
 import time
 
+
 class Game:
 
     # ฟังก์ชันสำหรับ Draw
@@ -183,6 +184,7 @@ class Game:
                                 root = Node(init_x, init_y)
                                 dfs = DFS(console_game, root=root, )
                                 dls = DLS(console_game, max_depth=console_game.count_answer_cell, root=root,)
+                                
                                 self.green_search_algorithm = dfs
                                 self.red_search_algorithm = dls
                                 screen.fill(Consistant.WHITE)
@@ -362,19 +364,7 @@ class Game:
 
     # เมื่อเรียกใช้ Class Game
     def __init__(self, map_path=None, green_search_algorithm=None, red_search_algorithm=None):
-
-        #self.map_path = map_path
-        #self.answer_map = self.read_map(self.map_path)
-        #self.map = np.full_like(self.answer_map, False)
-        #self.row_counts = self.count_neighbours(
-            #self.answer_map, count_value=True)
-        #self.column_counts = self.count_neighbours(
-            #self.answer_map.T, count_value=True)
-
         self.screen = self.initialize_game()
-        
-        #self.green_search_algorithm = green_search_algorithm
-        #self.red_search_algorithm = red_search_algorithm
         self.time = 0
 
     # อ่าน MAP
@@ -440,21 +430,8 @@ class Game:
         return np.all(self.answer_map == self.map)
 
 
-# %%
-
-#%%
-#map_path = 'Map/R.txt'
-#console_game = ConsoleGame(map_path)
-#init_x, init_y = console_game.answer_path[0]
-#root = Node(init_x, init_y)
-#dfs = DFS(console_game, root=root, )
-#dls = DLS(console_game, max_depth=console_game.count_answer_cell, root=root,)
 #%%
 
-#game = Game(map_path, green_search_algorithm=dfs, red_search_algorithm=dls)
-
-#game = Game(green_search_algorithm=dfs, red_search_algorithm=dls)
 game = Game()
-# %%
 game.initialize_game()
 game.game_loop()
