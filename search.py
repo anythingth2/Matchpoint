@@ -9,7 +9,7 @@ from tqdm import tqdm, trange
 from fractions import Fraction
 
 # %%
-DELAY = 0.1
+DELAY = 0.25
 
 
 class Node:
@@ -286,6 +286,8 @@ def search_pattern(vector, counts):
 def find_patterns(vector, counts):
     patterns = search_pattern(
         vector, counts=counts)
+    if len(patterns) == 0:
+        return patterns, np.zeros(len(vector), dtype=np.float)
     patterns = np.unique(patterns, axis=0)
     probs = patterns.sum(
         axis=0) / len(patterns)
@@ -314,7 +316,8 @@ def calculate_probability_table(game: ConsoleGame):
             prob_table[y, x] = (vertical_prob_table[x, y] *
                                 horizontal_prob_table[y, x])
     return prob_table
-
+def heuristic_o(game: ConsoleGame):
+    return np.random.random(game.shape)
 
 def plot_prob_table(prob_table):
     def float2fraction(v):
@@ -334,8 +337,11 @@ def plot_prob_table(prob_table):
 class GBFS:
     def __init__(self, game: ConsoleGame,
                  root: Node = None,
+                 
                  childs: List['GBFS'] = None,
-                 paths: List[Node] = None):
+                 h_func_type='h1',
+                 paths: List[Node] = None,
+                 render_func = None):
         self.game = game
         self.root = root
         if childs:
@@ -347,7 +353,10 @@ class GBFS:
         else:
             self.paths = []
         # self.prob = self.calculate_probability(self.game)
-
+        self.prob_table = None
+        self.render_func = render_func
+        
+        self.h_func_type = h_func_type
     @property
     def name(self):
         return 'GBFS'
@@ -369,11 +378,19 @@ class GBFS:
             if game.is_paintable(x, y):
                 nodes.append(Node(x, y))
         return nodes
+    
 
     def calculate_probability(self, game: ConsoleGame):
-        prob_table = calculate_probability_table(game)
+        
+        if self.prob_table is None:
+            if self.h_func_type == 'h2':
+                self.prob_table = heuristic_o(game)
+            else:
+                self.prob_table = calculate_probability_table(game)
+            
+
         # plot_prob_table(prob_table)
-        return prob_table
+        return self.prob_table
 
     def sort_by_prob(self, game: ConsoleGame, nodes: List['Node']):
         print('sorting...')
@@ -397,7 +414,18 @@ class GBFS:
         self.paths.append(self.root)
         print(f'lv.{painted_game.count_painted_cell}'.center(16, '-'))
         painted_game.render()
+        
         print('-'*16)
+        
+
+        paintable_nodes = self.find_paintable_nodes(
+            painted_game, self.root.x, self.root.y)
+        paintable_nodes, probs = self.sort_by_prob(
+            painted_game, paintable_nodes)
+        self.render_func(painted_game.map.copy(), self.prob_table)
+        
+        print('\n'.join([f'{str(node)}\t{prob}' for node,
+                         prob in zip(paintable_nodes, probs)]))
         if painted_game.check_result():
             print("WIN"*10)
             return self
@@ -405,20 +433,12 @@ class GBFS:
             # print('not match', np.argwhere(
             #     painted_game.answer_map != painted_game.map))
             pass
-
-        paintable_nodes = self.find_paintable_nodes(
-            painted_game, self.root.x, self.root.y)
-        paintable_nodes, probs = self.sort_by_prob(
-            painted_game, paintable_nodes)
-
-        print('\n'.join([f'{str(node)}\t{prob}' for node,
-                         prob in zip(paintable_nodes, probs)]))
         self.childs = []
         for node in paintable_nodes:
-            self.childs.append(GBFS(painted_game, root=node, paths=self.paths))
+            self.childs.append(GBFS(painted_game, root=node, paths=self.paths, render_func=self.render_func))
 
         for child in self.childs:
-            # time.sleep(0.25)
+            time.sleep(DELAY)
             print(f'search to {str(child.root)}')
             # input('k?')
             search_result = child.search()

@@ -5,7 +5,7 @@ import Consistant
 import numpy as np
 import time
 from game import ConsoleGame
-from search import DFS, DLS, Node
+from search import  GBFS, Node
 import time
 
 
@@ -48,13 +48,13 @@ class Game:
         pygame.draw.rect(screen, Consistant.GREY, (550, 525, 100, 50))
 
         font = pygame.font.Font('arial.ttf', 20)
-        text1 = font.render('DFS', True, (255, 255, 255))
+        text1 = font.render('h1(n)', True, (255, 255, 255))
         textrect1 = text1.get_rect()
         textrect1.centerx = 500
         textrect1.centery = 475
         screen.blit(text1, textrect1)
 
-        text2 = font.render('DLS', True, (255, 255, 255))
+        text2 = font.render('h2(n)', True, (255, 255, 255))
         textrect2 = text2.get_rect()
         textrect2.centerx = 700
         textrect2.centery = 475
@@ -66,7 +66,7 @@ class Game:
         textrect3.centery = 550
         screen.blit(text3, textrect3)
 
-    def draw_prob(self,_map=None):
+    def draw_prob(self,prob_table=None):
 
         font = pygame.font.Font('arial.ttf', 20)
         text = font.render(' ', True, (0, 0, 0))
@@ -74,15 +74,12 @@ class Game:
         textrect.centery = Consistant.BLOCK_HEIGHT/2
 
         screen = self.screen
-        if _map is None:
-            _map = self.map
-        for j, tile in enumerate(_map):
-            textrect.centerx = Consistant.BLOCK_WIDTH/4
+        for j, tile in enumerate(prob_table):
+            textrect.centerx = Consistant.BLOCK_WIDTH/16
             for i, tile_contents in enumerate(tile):
-                if tile_contents == False:
-                    text = font.render('0.75', True, (0, 0, 0))
-                    screen.blit(text, textrect)
-                    textrect.centerx = textrect.centerx+Consistant.BLOCK_WIDTH
+                text = font.render(str(tile_contents)[:4], True, (0, 0, 0))
+                screen.blit(text, textrect)
+                textrect.centerx = textrect.centerx+Consistant.BLOCK_WIDTH
             textrect.centery = textrect.centery+Consistant.BLOCK_HEIGHT
 
     def draw_textRow(self, screen):
@@ -91,7 +88,7 @@ class Game:
         textrect = text.get_rect()
         textrect.centery = 25
         for i, row in enumerate(self.row_counts):
-            textrect.centerx = 425
+            textrect.centerx = 325
             for j, num in enumerate(row):
                 text = font.render(str(num), True, (0, 0, 0))
                 screen.blit(text, textrect)
@@ -104,7 +101,7 @@ class Game:
         textrect = text.get_rect()
         textrect.centerx = 25
         for i, column in enumerate(self.column_counts):
-            textrect.centery = 425
+            textrect.centery = 325
             for j, num in enumerate(column):
                 text = font.render(str(num), True, (0, 0, 0))
                 screen.blit(text, textrect)
@@ -169,9 +166,9 @@ class Game:
                             sys.exit()
                         elif event.type == pygame.MOUSEBUTTONDOWN:
                             mouse = pygame.mouse.get_pos()
-                            # คลิ๊กปุ่มทางขวา(สีเขียว)
+                            
                             if(190 > mouse[0] > 10 and 280 > mouse[1] > 100):
-                                self.map_path = 'Map/B.txt'
+                                self.map_path = 'Map/B6.txt'
                                 self.answer_map = self.read_map(self.map_path)
                                 self.map = np.full_like(self.answer_map, False)
                                 self.row_counts = self.count_neighbours(
@@ -182,11 +179,11 @@ class Game:
                                 console_game = ConsoleGame(self.map_path)
                                 init_x, init_y = console_game.answer_path[0]
                                 root = Node(init_x, init_y)
-                                dfs = DFS(console_game, root=root, )
-                                dls = DLS(console_game, max_depth=console_game.count_answer_cell, root=root,)
+                                gbfs1 = GBFS(console_game, root=root, )
+                                gbfs2 = GBFS(console_game,root=root, h_func_type='h2')
                                 
-                                self.green_search_algorithm = dfs
-                                self.red_search_algorithm = dls
+                                self.green_search_algorithm = gbfs1
+                                self.red_search_algorithm = gbfs2
                                 screen.fill(Consistant.WHITE)
                                 self.draw_map(self.map)
                                 pygame.display.update()
@@ -204,10 +201,10 @@ class Game:
                                 console_game = ConsoleGame(self.map_path)
                                 init_x, init_y = console_game.answer_path[0]
                                 root = Node(init_x, init_y)
-                                dfs = DFS(console_game, root=root, )
-                                dls = DLS(console_game, max_depth=console_game.count_answer_cell, root=root,)
-                                self.green_search_algorithm = dfs
-                                self.red_search_algorithm = dls
+                                gbfs1 = GBFS(console_game, root=root, )
+                                gbfs2 = GBFS(console_game,  root=root, h_func_type='h2')
+                                self.green_search_algorithm = gbfs1
+                                self.red_search_algorithm = gbfs2
                                 screen.fill(Consistant.WHITE)
                                 self.draw_map(self.map)
                                 pygame.display.update()
@@ -224,16 +221,16 @@ class Game:
                                 console_game = ConsoleGame(self.map_path)
                                 init_x, init_y = console_game.answer_path[0]
                                 root = Node(init_x, init_y)
-                                dfs = DFS(console_game, root=root, )
-                                dls = DLS(console_game, max_depth=console_game.count_answer_cell, root=root,)
-                                self.green_search_algorithm = dfs
-                                self.red_search_algorithm = dls
+                                gbfs1 = GBFS(console_game, root=root, )
+                                gbfs2 = GBFS(console_game,  root=root, h_func_type='h2')
+                                self.green_search_algorithm = gbfs1
+                                self.red_search_algorithm = gbfs2
                                 screen.fill(Consistant.WHITE)
                                 self.draw_map(self.map)
                                 pygame.display.update()
                                 self.stage = 2
                             elif(790 > mouse[0] > 610 and 280 > mouse[1] > 100):
-                                self.map_path = 'Map/K.txt'
+                                self.map_path = 'Map/K6.txt'
                                 self.answer_map = self.read_map(self.map_path)
                                 self.map = np.full_like(self.answer_map, False)
                                 self.row_counts = self.count_neighbours(
@@ -244,10 +241,10 @@ class Game:
                                 console_game = ConsoleGame(self.map_path)
                                 init_x, init_y = console_game.answer_path[0]
                                 root = Node(init_x, init_y)
-                                dfs = DFS(console_game, root=root, )
-                                dls = DLS(console_game, max_depth=console_game.count_answer_cell, root=root,)
-                                self.green_search_algorithm = dfs
-                                self.red_search_algorithm = dls
+                                gbfs1 = GBFS(console_game, root=root, )
+                                gbfs2 = GBFS(console_game,  root=root, h_func_type='h2')
+                                self.green_search_algorithm = gbfs1
+                                self.red_search_algorithm = gbfs2
                                 screen.fill(Consistant.WHITE)
                                 self.draw_map(self.map)
                                 pygame.display.update()
@@ -264,16 +261,16 @@ class Game:
                                 console_game = ConsoleGame(self.map_path)
                                 init_x, init_y = console_game.answer_path[0]
                                 root = Node(init_x, init_y)
-                                dfs = DFS(console_game, root=root, )
-                                dls = DLS(console_game, max_depth=console_game.count_answer_cell, root=root,)
-                                self.green_search_algorithm = dfs
-                                self.red_search_algorithm = dls
+                                gbfs1 = GBFS(console_game, root=root, )
+                                gbfs2 = GBFS(console_game, root=root, h_func_type='h2')
+                                self.green_search_algorithm = gbfs1
+                                self.red_search_algorithm = gbfs2
                                 screen.fill(Consistant.WHITE)
                                 self.draw_map(self.map)
                                 pygame.display.update()
                                 self.stage = 2
                             elif(390 > mouse[0] > 210 and 520 > mouse[1] > 340):
-                                self.map_path = 'Map/R.txt'
+                                self.map_path = 'Map/R6.txt'
                                 self.answer_map = self.read_map(self.map_path)
                                 self.map = np.full_like(self.answer_map, False)
                                 self.row_counts = self.count_neighbours(
@@ -284,10 +281,10 @@ class Game:
                                 console_game = ConsoleGame(self.map_path)
                                 init_x, init_y = console_game.answer_path[0]
                                 root = Node(init_x, init_y)
-                                dfs = DFS(console_game, root=root, )
-                                dls = DLS(console_game, max_depth=console_game.count_answer_cell, root=root,)
-                                self.green_search_algorithm = dfs
-                                self.red_search_algorithm = dls
+                                gbfs1 = GBFS(console_game, root=root, )
+                                gbfs2 = GBFS(console_game,  root=root, h_func_type='h2')
+                                self.green_search_algorithm = gbfs1
+                                self.red_search_algorithm = gbfs2
                                 screen.fill(Consistant.WHITE)
                                 self.draw_map(self.map)
                                 pygame.display.update()
@@ -304,10 +301,10 @@ class Game:
                                 console_game = ConsoleGame(self.map_path)
                                 init_x, init_y = console_game.answer_path[0]
                                 root = Node(init_x, init_y)
-                                dfs = DFS(console_game, root=root, )
-                                dls = DLS(console_game, max_depth=console_game.count_answer_cell, root=root,)
-                                self.green_search_algorithm = dfs
-                                self.red_search_algorithm = dls
+                                gbfs1 = GBFS(console_game, root=root, )
+                                gbfs2 = GBFS(console_game, root=root, h_func_type='h2')
+                                self.green_search_algorithm = gbfs1
+                                self.red_search_algorithm = gbfs2
                                 screen.fill(Consistant.WHITE)
                                 self.draw_map(self.map)
                                 pygame.display.update()
@@ -323,19 +320,19 @@ class Game:
                         mouse = pygame.mouse.get_pos()
                         # คลิ๊กปุ่มทางขวา(สีเขียว)
                         if(550 > mouse[0] > 450 and 500 > mouse[1] > 450):
-                            def render_func(_map):
+                            def render_func(_map, prob_table):
                                 self.draw_map( _map)
                                 self.draw_grid(screen)
-                                self.draw_prob()
+                                self.draw_prob(prob_table)
                                 pygame.display.update()
                             self.green_search_algorithm.render_func = render_func
                             self.green_search_algorithm.search()
                         # คลิ๊กปุ่มซ้าย(สีแดง)
                         elif(750 > mouse[0] > 650 and 500 > mouse[1] > 450):
-                            def render_func(_map):
+                            def render_func(_map, prob_table):
                                 self.draw_map( _map)
                                 self.draw_grid(screen)
-                                self.draw_prob()
+                                self.draw_prob(prob_table)
                                 pygame.display.update()
                             self.red_search_algorithm.render_func = render_func
                             self.red_search_algorithm.search()
@@ -350,7 +347,7 @@ class Game:
                 self.draw_textRow(screen)
                 self.draw_textColumn(screen)
                 self.drawButton(screen)
-                self.draw_prob()
+                #self.draw_prob()
                 pygame.display.update()
 
     # Set Up ฉากหลังของ GAME
