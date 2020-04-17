@@ -7,9 +7,10 @@ import time
 import numpy as np
 from tqdm import tqdm, trange
 from fractions import Fraction
+from heuristic_O import getProb
 
 # %%
-DELAY = 0.25
+DELAY = 0.2
 
 
 class Node:
@@ -317,7 +318,7 @@ def calculate_probability_table(game: ConsoleGame):
                                 horizontal_prob_table[y, x])
     return prob_table
 def heuristic_o(game: ConsoleGame):
-    return np.random.random(game.shape)
+    return np.array(getProb(game))
 
 def plot_prob_table(prob_table):
     def float2fraction(v):
